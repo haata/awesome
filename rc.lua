@@ -101,7 +101,7 @@ for s = 1, screen.count() do
     -- Create 9 tags per screen.
     for tagnumber = 1, 9 do
 	if s == 1 then
-		tags_names	= { "1|Dev", "2|Dev2", "3|Dev3", "4", "5", "6", "7|Console", "8|Opera", "9|MPlayer" }
+		tags_names	= { "1|Dev", "2|Dev2", "3|Dev3", "4", "5", "6|VMWare", "7|Console", "8|Opera", "9|MPlayer" }
 		tags_layout	= { "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft" } 
 	end
 	if s == 2 then
