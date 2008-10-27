@@ -7,11 +7,16 @@ require("beautiful")
 require("invaders")
 
 home = os.getenv("HOME")
+hostname = io.popen("hostname"):read("*all")
 
 -- {{{ Variable definitions
 -- This is a file path to a theme file which will defines colors.
 -- theme_path = "/usr/share/awesome/themes/default"
-theme_path = home .. "/.config/awesome/themes/default"
+if hostname == "MasArch\n" then
+	theme_path = home .. "/Configs/awesome/themes/MasArch"
+else
+	theme_path = home .. "/.config/awesome/themes/default"
+end
 
 -- This is used later as the default terminal and editor to run.
 terminal = "urxvt"
@@ -64,16 +69,24 @@ floatapps =
 
 -- Applications to be moved to a pre-defined tag by class or instance.
 -- Use the screen and tags indices.
-apptags =
-{
-	["Assistant_adp"] = { screen = 2, tag = 4 },
-	["ncmpcpp"] = { screen = 2, tag = 6 },
-	["Pidgin"] = { screen = 2, tag = 6 },
-	["tor"] = { screen = 2, tag = 6 },
-	["opera"] = { screen = 1, tag = 8 },
-	["MPlayer"] = { screen = 1, tag = 9 },
-	["Krusader"] = { screen = 2, tag = 9 }
-}
+if hostname == "MasArch\n" then
+	apptags =
+	{
+		["opera"] = { screen = 2, tag = 1 },
+		["Krusader"] = { screen = 2, tag = 9 }
+	}
+else
+	apptags =
+	{
+		["Assistant_adp"] = { screen = 2, tag = 4 },
+		["ncmpcpp"] = { screen = 2, tag = 6 },
+		["Pidgin"] = { screen = 2, tag = 6 },
+		["tor"] = { screen = 2, tag = 6 },
+		["opera"] = { screen = 1, tag = 8 },
+		["MPlayer"] = { screen = 1, tag = 9 },
+		["Krusader"] = { screen = 2, tag = 9 }
+	}
+end
 
 -- Define if we want to use titlebar on all applications.
 use_titlebar = false
@@ -100,13 +113,24 @@ for s = 1, screen.count() do
     tags[s] = {}
     -- Create 9 tags per screen.
     for tagnumber = 1, 9 do
-	if s == 1 then
-		tags_names	= { "1|Dev", "2|Dev2", "3|Dev3", "4", "5", "6|VMWare", "7|Console", "8|Opera", "9|MPlayer" }
-		tags_layout	= { "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft" } 
-	end
-	if s == 2 then
-		tags_names	= { "1|Dev", "2|Dev2", "3|Dev3", "4|Qt", "5", "6|MusMesTor", "7|Console", "8|Opera", "9|Krusader" }
-		tags_layout	= { "tile", "tile", "tile", "tile", "tile", "fairv", "tile", "tile", "tile" } 
+	if hostname == "MasArch\n" then
+		if s == 1 then
+			tags_names	= { "1|oemCustomize", "2|OEM CVS", "3|OEM SVN", "4|Console", "5|Asus SVN", "6|Asus CVS", "7", "8", "9|VM" }
+			tags_layout	= { "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile" } 
+		end
+		if s == 2 then
+			tags_names	= { "1|Opera", "2|VM Asus", "3|VM OEM", "4|Arch64", "5", "6", "7", "8", "9|Krusader" }
+			tags_layout	= { "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft" } 
+		end
+	else
+		if s == 1 then
+			tags_names	= { "1|Dev", "2|Dev2", "3|Dev3", "4", "5", "6|VMWare", "7|Console", "8|Opera", "9|MPlayer" }
+			tags_layout	= { "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft" } 
+		end
+		if s == 2 then
+			tags_names	= { "1|Dev", "2|Dev2", "3|Dev3", "4|Qt", "5", "6|MusMesTor", "7|Console", "8|Opera", "9|Krusader" }
+			tags_layout	= { "tile", "tile", "tile", "tile", "tile", "fairv", "tile", "tile", "tile" } 
+		end
 	end
         -- tags[s][tagnumber] = tag({ name = tagnumber, layout = layouts[1] })
 	tags[s][tagnumber] = tag({ name = tags_names[tagnumber], layout = tags_layout[tagnumber] })
@@ -525,7 +549,7 @@ awful.hooks.timer.register(1, function ()
     -- For unix time_t lovers
     -- mytextbox.text = " " .. os.time() .. " time_t "
     -- Otherwise use:
-    mytextbox.text = " " .. os.date() .. " "
+    mytextbox.text = " " .. os.date() .. " " .. hostname
 end)
 -- }}}
 
