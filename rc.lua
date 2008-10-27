@@ -570,17 +570,16 @@ awful.hooks.focus.register(function (c)
     c:raise()
 
     -- Set statusbar color
-    if settings.statusbar_highlight_focus and settings.statusbar_highlight_focus[1] then
-        if last_screen == nil or last_screen ~= c.screen then
-            mainstatusbar[settings.statusbar_highlight_focus[2]][c.screen].bg = beautiful.bg_sbfocus
+--    if settings.statusbar_highlight_focus and settings.statusbar_highlight_focus[1] then
+--        if last_screen == nil or last_screen ~= c.screen then
+--            mainstatusbar[settings.statusbar_highlight_focus[2]][c.screen].bg = beautiful.bg_sbfocus
 
-            if last_screen then
-                mainstatusbar[settings.statusbar_highlight_focus[2]][last_screen].bg = beautiful.bg_normal
-            end
-        end
+--          if last_screen then
+--                mainstatusbar[settings.statusbar_highlight_focus[2]][last_screen].bg = beautiful.bg_normal
+--            end
+--        end
 
-        last_screen = c.screen
-    end
+--        last_screen = c.screen    end
 
 end)
 -- }}}
