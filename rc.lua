@@ -1,6 +1,7 @@
 -- awesome 3 configuration file
 
 -- Include awesome library, with lots of useful function!
+
 require("awful")
 require("tabulous")
 require("beautiful")
@@ -18,8 +19,10 @@ else
 	theme_path = home .. "/.config/awesome/themes/default"
 end
 
+beautiful.init(theme_path)
+
 -- This is used later as the default terminal and editor to run.
-terminal = "urxvt"
+terminal = "baulkTerm"
 editor = "vim"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -75,6 +78,13 @@ if hostname == "MasArch\n" then
 		["opera"] = { screen = 2, tag = 1 },
 		["Krusader"] = { screen = 2, tag = 9 }
 	}
+elseif hostname == "TurMas\n" then
+	apptags =
+	{
+		["Assistant_adp"] = { screen = 1, tag = 4 },
+		["Pidgin"] = { screen = 1, tag = 5 },
+		["opera"] = { screen = 1, tag = 8 },
+	}
 else
 	apptags =
 	{
@@ -90,19 +100,6 @@ end
 
 -- Define if we want to use titlebar on all applications.
 use_titlebar = false
--- }}}
-
--- {{{ Initialization
--- Initialize theme (colors).
-beautiful.init(theme_path)
-
--- Register theme in awful.
--- This allows to not pass plenty of arguments to each function
--- to inform it about colors we want it to draw.
-awful.beautiful.register(beautiful)
-
--- Uncomment this to activate autotabbing
--- tabulous.autotab_start()
 -- }}}
 
 -- {{{ Tags
@@ -121,6 +118,11 @@ for s = 1, screen.count() do
 		if s == 2 then
 			tags_names	= { "1|Opera", "2|VM Asus", "3|VM OEM", "4|Arch64", "5", "6", "7", "8", "9|Krusader" }
 			tags_layout	= { "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft" } 
+		end
+	elseif hostname == "TurMas\n" then
+		if s == 1 then
+			tags_names	= { "1", "2", "3", "4|Qt", "5|Pidgin", "6|MPD", "7|Console", "8|Opera", "9" }
+			tags_layout	= { "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile" } 
 		end
 	else
 		if s == 1 then
@@ -143,62 +145,31 @@ end
 -- }}}
 
 
--- {{{ MPD widget
---[[
-function widget_mpd()
-	  local now_playing, volume
-	  local status
-	  local f = io.popen("mpc 2>/dev/null")
-	  for line in f:lines() do
-	    if line:find("^volume:") then -- volume
-	      volume = line:match("volume: *(%d+%%)")
-	    elseif line:find("^%[paused%]") then -- paused
-	      status = "paused"
-	    elseif line:find("^%[playing%]") then -- playing
-	      status = nil
-	    else -- not one of the previous lines, so this is the current track
-	      --now_playing = awful.escape(line)
-	      now_playing = line
-	    end
-	  end
-	  f:close()
-	  if status then
-	    now_playing = now_playing .. " (" .. status .. ")"
-	  end
-	  return widget_base(widget_section("MPD", now_playing, widget_section("Vol.", volume)))	end
-	
-mpdbox = widget({ type = "textbox", name = "mpdbox", align = "right" })
-mpdbox.text = widget_mpd()
-]]	
--- }}}
-
 
 -- {{{ Wibox
 -- Create a textbox widget
-mytextbox = widget({ type = "textbox", name = "mytextbox", align = "right" })
+mytextbox = widget({ type = "textbox", align = "right" })
 -- Set the default text in textbox
 mytextbox.text = "<b><small> " .. AWESOME_RELEASE .. " </small></b>"
 
 -- Create a laucher widget and a main menu
 myawesomemenu = {
-   {"manual", terminal .. " -e man awesome" },
-   {"edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" },
-   {"restart", awesome.restart },
-   {"quit", awesome.quit }
+   { "manual", terminal .. " -e man awesome" },
+   { "edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" },
+   { "restart", awesome.restart },
+   { "quit", awesome.quit }
 }
 
-mymainmenu = {
-   {"awesome", myawesomemenu, "/usr/share/awesome/icons/awesome16.png" },
-   {"open terminal", terminal }
-}
+mymainmenu = awful.menu.new({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
+                                        { "open terminal", terminal }
+                                      }
+                            })
 
-mylauncher = awful.widget.launcher({ name = "mylauncher",
-                                     image = "/usr/share/awesome/icons/awesome16.png",
-                                     menu = { id="mymainmenu", items=mymainmenu } })
+mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
+                                     menu = mymainmenu })
 
 -- Create a systray
-mysystray = widget({ type = "systray", name = "mysystray", align = "right" })
-
+mysystray = widget({ type = "systray", align = "right" })
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -213,15 +184,16 @@ mytaglist.buttons = { button({ }, 1, awful.tag.viewonly),
                       button({ }, 5, awful.tag.viewprev) }
 mytasklist = {}
 mytasklist.buttons = { button({ }, 1, function (c) client.focus = c; c:raise() end),
+                       button({ }, 3, function () awful.menu.clients({ width=250 }) end),
                        button({ }, 4, function () awful.client.focus.byidx(1) end),
                        button({ }, 5, function () awful.client.focus.byidx(-1) end) }
 
 for s = 1, screen.count() do
     -- Create a promptbox for each screen
-    mypromptbox[s] = widget({ type = "textbox", name = "mypromptbox" .. s, align = "left" })
+    mypromptbox[s] = widget({ type = "textbox", align = "left" })
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
-    mylayoutbox[s] = widget({ type = "imagebox", name = "mylayoutbox", align = "right" })
+    mylayoutbox[s] = widget({ type = "imagebox", align = "right" })
     mylayoutbox[s]:buttons({ button({ }, 1, function () awful.layout.inc(layouts, 1) end),
                              button({ }, 3, function () awful.layout.inc(layouts, -1) end),
                              button({ }, 4, function () awful.layout.inc(layouts, 1) end),
@@ -235,11 +207,10 @@ for s = 1, screen.count() do
                                               end, mytasklist.buttons)
 
     -- Create the wibox
-    mywibox[s] = wibox({ position = "top", name = "mywibox" .. s,
-                         fg = beautiful.fg_normal, bg = beautiful.bg_normal })
+    mywibox[s] = wibox({ position = "top", fg = beautiful.fg_normal, bg = beautiful.bg_normal })
     -- Add widgets to the wibox - order matters
-    mywibox[s].widgets = { mytaglist[s],
-                           mylauncher,
+    mywibox[s].widgets = { mylauncher,
+                           mytaglist[s],
                            mytasklist[s],
                            mypromptbox[s],
                            mytextbox,
@@ -255,9 +226,9 @@ end
 
 -- {{{ Mouse bindings
 awesome.buttons({
-    button({ }, 3, function () awful.menu.new({ id="mymainmenu", items=mymainmenu }) end),
-    -- button({ }, 4, awful.tag.viewnext),
-    -- button({ }, 5, awful.tag.viewprev)
+    button({ }, 3, function () mymainmenu:toggle() end),
+    --button({ }, 4, awful.tag.viewnext),
+    --button({ }, 5, awful.tag.viewprev)
 })
 -- }}}
 
@@ -324,12 +295,12 @@ keybinding({ modkey }, "f", function () client.focus.fullscreen = not client.foc
 keybinding({ modkey, "Shift" }, "c", function () client.focus:kill() end):add()
 keybinding({ modkey }, "j", function () awful.client.focus.byidx(1); client.focus:raise() end):add()
 keybinding({ modkey }, "k", function () awful.client.focus.byidx(-1);  client.focus:raise() end):add()
-keybinding({ modkey, "Shift" }, "j", function () awful.client.swap(1) end):add()
+keybinding({ modkey, "Shift" }, "j", function () awful.client.swap.byidx(1) end):add()
 keybinding({ modkey, "Shift" }, "k", function () awful.client.swap(-1) end):add()
 keybinding({ modkey, "Control" }, "j", function () awful.screen.focus(1) end):add()
 keybinding({ modkey, "Control" }, "k", function () awful.screen.focus(-1) end):add()
 keybinding({ modkey, "Control" }, "space", awful.client.togglefloating):add()
-keybinding({ modkey, "Control" }, "Return", function () client.focus:swap(awful.client.master()) end):add()
+keybinding({ modkey, "Control" }, "Return", function () client.focus:swap(awful.client.getmaster()) end):add()
 keybinding({ modkey }, "o", awful.client.movetoscreen):add()
 keybinding({ modkey }, "Tab", awful.client.focus.history.previous):add()
 keybinding({ modkey }, "u", awful.client.urgent.jumpto):add()
@@ -348,10 +319,13 @@ keybinding({ modkey, "Shift" }, "space", function () awful.layout.inc(layouts, -
 -- Prompt
 keybinding({ modkey }, "p", function ()
                                  awful.prompt.run({ prompt = "Run: " }, mypromptbox[mouse.screen], awful.util.spawn, awful.completion.bash,
-awful.util.getdir("cache") .. "/history") end):add()
+                                                  awful.util.getdir("cache") .. "/history")
+                             end):add()
 keybinding({ modkey }, "F4", function ()
                                  awful.prompt.run({ prompt = "Run Lua code: " }, mypromptbox[mouse.screen], awful.util.eval, awful.prompt.bash,
-awful.util.getdir("cache") .. "/history_eval") end):add()
+                                                  awful.util.getdir("cache") .. "/history_eval")
+                             end):add()
+
 keybinding({ modkey, "Ctrl" }, "i", function ()
                                         local s = mouse.screen
                                         if mypromptbox[s].text then
@@ -370,52 +344,8 @@ keybinding({ modkey, "Ctrl" }, "i", function ()
                                         end
                                     end):add()
 
---- Tabulous, tab manipulation
-keybinding({ modkey, "Control" }, "y", function ()
-    local tabbedview = tabulous.tabindex_get()
-    local nextclient = awful.client.next(1)
-
-    if not tabbedview then
-        tabbedview = tabulous.tabindex_get(nextclient)
-
-        if not tabbedview then
-            tabbedview = tabulous.tab_create()
-            tabulous.tab(tabbedview, nextclient)
-        else
-            tabulous.tab(tabbedview, client.focus)
-        end
-    else
-        tabulous.tab(tabbedview, nextclient)
-    end
-end):add()
-
-keybinding({ modkey, "Shift" }, "y", tabulous.untab):add()
-
-keybinding({ modkey }, "y", function ()
-   local tabbedview = tabulous.tabindex_get()
-
-   if tabbedview then
-       local n = tabulous.next(tabbedview)
-       tabulous.display(tabbedview, n)
-   end
-end):add()
-
 -- Client awful tagging: this is useful to tag some clients and then do stuff like move to tag on them
 keybinding({ modkey }, "t", awful.client.togglemarked):add()
-keybinding({ modkey, 'Shift' }, "t", function ()
-    local tabbedview = tabulous.tabindex_get()
-    local clients = awful.client.getmarked()
-
-    if not tabbedview then
-        tabbedview = tabulous.tab_create(clients[1])
-        table.remove(clients, 1)
-    end
-
-    for k,c in pairs(clients) do
-        tabulous.tab(tabbedview, c)
-    end
-
-end):add()
 
 for i = 1, keynumber do
     keybinding({ modkey, "Shift" }, "F" .. i,
@@ -516,7 +446,7 @@ end)
 awful.hooks.arrange.register(function (screen)
     local layout = awful.layout.get(screen)
     if layout then
-        mylayoutbox[screen].image = image("/usr/share/awesome/icons/layouts/" .. layout .. "w.png")
+        mylayoutbox[screen].image = image(beautiful["layout_" .. layout])
     else
         mylayoutbox[screen].image = nil
     end
@@ -531,7 +461,7 @@ awful.hooks.arrange.register(function (screen)
     -- Uncomment if you want mouse warping
     --[[
     if client.focus then
-        local c_c = client.focus:geometry()
+        local c_c = client.focus:fullgeometry()
         local m_c = mouse.coords()
 
         if m_c.x < c_c.x or m_c.x >= c_c.x + c_c.width or
@@ -546,49 +476,24 @@ end)
 
 -- Hook called every second
 awful.hooks.timer.register(1, function ()
-    -- For unix time_t lovers
-    -- mytextbox.text = " " .. os.time() .. " time_t "
-    -- Otherwise use:
     mytextbox.text = " " .. os.date() .. " " .. hostname
 end)
 -- }}}
 
 -- {{{ Focus hook
 awful.hooks.focus.register(function (c)
-
-    -- Skip over my urxvtcnotify
-    if c.name and c.name:lower():find('urxvtcnotify') and awful.client.next(1) ~= c then
-        awful.client.focusbyidx(1)
-        return
-    end
-
     -- Set border
     c.border_color = beautiful.border_focus
     c.opacity = 1
-
     -- Raise the client
     c:raise()
-
-    -- Set statusbar color
---    if settings.statusbar_highlight_focus and settings.statusbar_highlight_focus[1] then
---        if last_screen == nil or last_screen ~= c.screen then
---            mainstatusbar[settings.statusbar_highlight_focus[2]][c.screen].bg = beautiful.bg_sbfocus
-
---          if last_screen then
---                mainstatusbar[settings.statusbar_highlight_focus[2]][last_screen].bg = beautiful.bg_normal
---            end
---        end
-
---        last_screen = c.screen    end
-
-end)
 -- }}}
 
 -- {{{ Unfocus hook
 awful.hooks.unfocus.register(function (c)
     -- Set border
     c.border_color = beautiful.border_normal
-    c.opacity = 0.7
+    c.opacity = 0.9
 end)
 -- }}}
 
