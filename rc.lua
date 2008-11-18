@@ -11,12 +11,12 @@ home = os.getenv("HOME")
 hostname = io.popen("hostname"):read("*all")
 
 -- {{{ Variable definitions
--- This is a file path to a theme file which will defines colors.
--- theme_path = "/usr/share/awesome/themes/default"
+-- Fallback theme
+theme_path = "/usr/share/awesome/themes/sky/theme"
+
+-- Themes per hostname
 if hostname == "MasArch\n" then
-	theme_path = home .. "/Configs/awesome/themes/MasArch"
-else
-	theme_path = home .. "/.config/awesome/themes/default"
+	theme_path = home .. "/Configs/awesome/themes/default/theme"
 end
 
 beautiful.init(theme_path)
@@ -214,7 +214,6 @@ for s = 1, screen.count() do
                            mytasklist[s],
                            mypromptbox[s],
                            mytextbox,
-			   --mpdbox,
                            mylayoutbox[s],
                            s == 1 and mysystray or nil }
     mywibox[s].screen = s
@@ -457,21 +456,6 @@ awful.hooks.arrange.register(function (screen)
         local c = awful.client.focus.history.get(screen, 0)
         if c then client.focus = c end
     end
-
-    -- Uncomment if you want mouse warping
-    --[[
-    if client.focus then
-        local c_c = client.focus:fullgeometry()
-        local m_c = mouse.coords()
-
-        if m_c.x < c_c.x or m_c.x >= c_c.x + c_c.width or
-            m_c.y < c_c.y or m_c.y >= c_c.y + c_c.height then
-            if table.maxn(m_c.buttons) == 0 then
-                mouse.coords({ x = c_c.x + 5, y = c_c.y + 5})
-            end
-        end
-    end
-    ]]
 end)
 
 -- Hook called every second
@@ -487,6 +471,7 @@ awful.hooks.focus.register(function (c)
     c.opacity = 1
     -- Raise the client
     c:raise()
+end)
 -- }}}
 
 -- {{{ Unfocus hook
