@@ -83,7 +83,14 @@ elseif hostname == "TurMas\n" then
 	{
 		["Assistant_adp"] = { screen = 1, tag = 4 },
 		["Pidgin"] = { screen = 1, tag = 5 },
-		["opera"] = { screen = 1, tag = 8 },
+		["opera"] = { screen = 1, tag = 8 }
+	}
+elseif hostname == "901Mas\n" then
+	apptags =
+	{
+		["Assistant_adp"] = { screen = 1, tag = 4 },
+		["ncmpcpp"] = { screen = 1, tag = 5 },
+		["opera"] = { screen = 1, tag = 8 }
 	}
 else
 	apptags =
@@ -122,6 +129,11 @@ for s = 1, screen.count() do
 	elseif hostname == "TurMas\n" then
 		if s == 1 then
 			tags_names	= { "1", "2", "3", "4|Qt", "5|Pidgin", "6|MPD", "7|Console", "8|Opera", "9" }
+			tags_layout	= { "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile" } 
+		end
+	elseif hostname == "901Mas\n" then
+		if s == 1 then
+			tags_names	= { "1|Dev", "2|Dev", "3|Dev", "4|Qt", "5|MPD", "6|Opera", "7", "8|Test", "9|Com" } 
 			tags_layout	= { "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile" } 
 		end
 	else
