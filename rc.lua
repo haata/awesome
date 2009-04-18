@@ -127,7 +127,7 @@ for s = 1, screen.count() do
 			tags_layout	= { "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile" } 
 		end
 	else
-		if s == 1 then
+		if s == 2 then
 			tags_names	= { "1|Dev", "2|Dev2", "3|Dev3", "4", "5", "6|VMWare", "7|Console", "8|Opera", "9|MPlayer" }
 			tags_layout	= { "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft", "tileleft" } -- These are not working atm
 		end
@@ -135,6 +135,7 @@ for s = 1, screen.count() do
 			tags_names	= { "1|Dev", "2|Dev2", "3|Dev3", "4|Qt", "5", "6|MusMesTor", "7|Console", "8|Opera", "9|Krusader" }
 			tags_layout	= { "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile", "tile" } -- These are not working atm
 		end
+	end
         tags[s][tagnumber] = tag( tags_names[tagnumber], tags_layout[tagnumber] )
         -- Add tags to screen one by one
 	--tags[s][tagnumber] = tag({ name = tags_names[tagnumber] })
